@@ -1,0 +1,18 @@
+post -f C:\Users\chris\Documents\School\comp 445\Random necessities.txt http://httpbin.org/post
+
+post -h Content-Type:application/json -d '{"Assignment": 1}' http://httpbin.org/post
+
+get httpbin.org/status/418
+
+get -v httpbin.org/status/418
+
+get http://httpbin.org/get?course=networking&assignment=1
+
+post -d '{"Assignment": 2}' 127.0.0.1/Something.txt
+
+post -f G:\workspace\445 Lab1\resources\RandomNecessities.txt 127.0.0.1/SomethingElse.txt
+
+get 127.0.0.1/
+
+get 127.0.0.1/RandomNecessities.txt
+
