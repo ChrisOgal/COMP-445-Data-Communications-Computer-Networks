@@ -79,9 +79,6 @@ public class httpClient {
 			
 			
 			}
-
-
-
 		}
 
 
@@ -134,10 +131,10 @@ public class httpClient {
 		
 		//System.out.println(currentRequest.getHost());
 		
-		try (Socket socket = new Socket (currentRequest.getHost(), 80);
+		try (Socket socket = new Socket (currentRequest.getHost(), 8080);
 				
 				PrintWriter clientOut = new PrintWriter (socket.getOutputStream(), true);
-				BufferedReader clientIn = new BufferedReader (new InputStreamReader(socket.getInputStream())))
+				BufferedReader serverIn = new BufferedReader (new InputStreamReader(socket.getInputStream())))
 			
 		{
 			
@@ -161,17 +158,12 @@ public class httpClient {
 			
 		}
 			
-			
-			
-			
 			System.out.println("\nAwaiting response......\n");
-			
-			
 			
 			String rawResponse = "";
 			String responseBit = "";
 			
-			while ((responseBit = clientIn.readLine())!=null)
+			while ((responseBit = serverIn.readLine())!=null)
 			{
 				rawResponse += responseBit + "\n";
 			}

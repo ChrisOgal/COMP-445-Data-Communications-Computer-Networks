@@ -153,10 +153,6 @@ public class Response {
 		}
 		
 		System.out.println(requestedData);
-	}
-	
-	
-	
-	
+	}	
 
 }
