@@ -290,7 +290,7 @@ public class FileServer {
 					
 					
 					//Flush lower buffer
-					if ((windowBase == 5 || packetsReceived == incomingPackets) && lowerBuffer[0] !=null)
+					if ((windowBase == 5 || packetsReceived == incomingPackets) && (displacement * sequenceNumbers) < expectedPayload.length)
 					{
 						for (int k = 0; ;k++ )
 						{
@@ -299,15 +299,11 @@ public class FileServer {
 							{
 								expectedPayload[(displacement * sequenceNumbers) + k] = lowerBuffer[k];
 								
-							/*	if (packetsReceived == incomingPackets)
-								{
-									break;
-								} */
 								lowerBuffer[k] = null;
 								
 							}
 							
-							if (k == lowerBuffer.length || k+1 == expectedPayload.length)
+							if (k+1 == lowerBuffer.length || (displacement * sequenceNumbers) + k+1 == expectedPayload.length)
 							{
 								lowerFlushed = true;
 								break;
@@ -316,7 +312,7 @@ public class FileServer {
 					}
 					
 					//Flush upper buffer
-					if ((windowMax == 0 || packetsReceived == incomingPackets) && upperBuffer[0] != null)
+					if ((windowBase == 0 || packetsReceived == incomingPackets) && (displacement * sequenceNumbers) + 5 < expectedPayload.length)
 					{
 						for (int k = 0; ;k++ )
 						{
@@ -325,13 +321,11 @@ public class FileServer {
 							{
 								expectedPayload[(displacement * sequenceNumbers) + k + 5] = upperBuffer[k];
 								
-						
-								
-								lowerBuffer[k] = null;
+								upperBuffer[k] = null;
 								
 							}
 							
-							if (k == upperBuffer.length  || k + 1 == expectedPayload.length)
+							if (k+1 == upperBuffer.length  || (displacement * sequenceNumbers) + k+6 == expectedPayload.length)
 							{
 								upperFlushed = true;
 								break;
@@ -388,7 +382,7 @@ public class FileServer {
 			
 			if (incoming.getPacketType() == DATA_TYPE.SYN_ACK.getValue())
 			{
-				System.out.println("Begin Response");
+				System.out.println("Request Received");
 				
 				
 			}
@@ -474,7 +468,7 @@ public class FileServer {
 					 }
 					 
 					 //If there are any moves to be made, the window will be shifted here.
-					 if (hops != 0)
+					 if (hops != 0 && packetCounter != readyPacks.length)
 					 {
 						 windowBase = (windowBase + hops) % sequenceNumbers; 
 						 windowMax = (windowMax + hops) % sequenceNumbers;
@@ -485,6 +479,7 @@ public class FileServer {
 						 {
 							 if (!sent[(i + windowBase) % sequenceNumbers])
 							 {
+								 packetTimers[(i + windowBase) % sequenceNumbers] = new PacketTimer();
 								 Packet.sendPacket(packetTimers[(i + windowBase) % sequenceNumbers], serverSocket, readyPacks[packetCounter], timeDelay, timer);
 								 sent[(i + windowBase) % sequenceNumbers] = true;
 								 packetCounter ++;
@@ -496,7 +491,7 @@ public class FileServer {
 				  
 			}
 			
-			System.out.println("Response complete");
+			System.out.println("Response Complete");
 			
 	}
 			

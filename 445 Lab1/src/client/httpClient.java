@@ -214,7 +214,7 @@ public class httpClient {
 				outgoingPackets = (requestSize/1013) + 1;
 			}
 			
-			
+			System.out.println(outgoingPackets);
 			
 			
 			// HTTP Handshake
@@ -336,7 +336,7 @@ public class httpClient {
 					 }
 					 
 					 //If there are any moves to be made, the window will be shifted here.
-					 if (hops != 0)
+					 if (hops != 0 && packetCounter != readyPacks.length)
 					 {
 						 windowBase = (windowBase + hops) % totalSequenceNumbers; 
 						 windowMax = (windowMax + hops) % totalSequenceNumbers;
@@ -347,10 +347,13 @@ public class httpClient {
 						 {
 							 if (!sent[(i + windowBase) % totalSequenceNumbers])
 							 {
+								 packetTimers[(i + windowBase) % totalSequenceNumbers] = new PacketTimer();
 								 Packet.sendPacket(packetTimers[(i + windowBase) % totalSequenceNumbers], socket, readyPacks[packetCounter], timeDelay, timer);
 								 sent[(i + windowBase) % totalSequenceNumbers] = true;
 								 packetCounter ++;
 							 }
+							 
+							 
 						 }
 					 }
 					 	 
@@ -359,7 +362,7 @@ public class httpClient {
 				 
 			}
 			
-			 
+			 System.out.println("Request sent");
 			
 		/*	System.out.println("\nAwaiting response......\n");
 			
@@ -477,7 +480,7 @@ public class httpClient {
 					
 					
 					//Flush lower buffer
-					if ((windowBase == 5 || packetsReceived == incomingPackets) && lowerBuffer[0] !=null)
+					if ((windowBase == 5 || packetsReceived == incomingPackets) && (displacement * totalSequenceNumbers) < expectedPayload.length)
 					{
 						for (int k = 0; ;k++ )
 						{
@@ -486,15 +489,11 @@ public class httpClient {
 							{
 								expectedPayload[(displacement * totalSequenceNumbers) + k] = lowerBuffer[k];
 								
-							/*	if (packetsReceived == incomingPackets)
-								{
-									break;
-								} */
 								lowerBuffer[k] = null;
 								
 							}
 							
-							if (k == lowerBuffer.length || k+1 == expectedPayload.length)
+							if (k+1 == lowerBuffer.length || (displacement * totalSequenceNumbers) + k+1 == expectedPayload.length)
 							{
 								lowerFlushed = true;
 								break;
@@ -503,7 +502,7 @@ public class httpClient {
 					}
 					
 					//Flush upper buffer
-					if ((windowMax == 0 || packetsReceived == incomingPackets) && upperBuffer[0] != null)
+					if ((windowBase == 0 || packetsReceived == incomingPackets) && (displacement * totalSequenceNumbers) + 5 < expectedPayload.length)
 					{
 						for (int k = 0; ;k++ )
 						{
@@ -512,13 +511,11 @@ public class httpClient {
 							{
 								expectedPayload[(displacement * totalSequenceNumbers) + k + 5] = upperBuffer[k];
 								
-						
-								
-								lowerBuffer[k] = null;
+								upperBuffer[k] = null;
 								
 							}
 							
-							if (k == upperBuffer.length  || k + 1 == expectedPayload.length)
+							if (k+1 == upperBuffer.length  || (displacement * totalSequenceNumbers) + k+6 == expectedPayload.length)
 							{
 								upperFlushed = true;
 								break;
@@ -540,14 +537,10 @@ public class httpClient {
 					String rawResponse = Packet.buildPayload(expectedPayload);
 					Response currentResponse = new Response (rawResponse, currentRequest.isVerbose());
 					currentResponse.generateResponse();
-					
 					currentResponse.printResponse();
 					
 					
 		}
-			
-		
-		
 		
 		catch (UnknownHostException e)
 		{
@@ -557,6 +550,7 @@ public class httpClient {
 			
 			e1.printStackTrace();
 		}
+		
 		
 		
 	

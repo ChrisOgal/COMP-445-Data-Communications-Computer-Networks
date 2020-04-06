@@ -281,6 +281,7 @@ public class Packet {
 		
 		for (int i = 0; i < bufferedRaw.length; i++)
 		{
+			
 			byte [] currentSegment = bufferedRaw[i].getPayLoad();
 			
 			for (int j = 0; j < currentSegment.length; j++)

@@ -15,3 +15,5 @@ post -f G:\workspace\445 Lab1\resources\RandomNecessities.txt 127.0.0.1/Somethin
 get 127.0.0.1/
 
 get 127.0.0.1/RandomNecessities.txt
+
+post -f G:\workspace\445 Lab1\resources\ThirdHarmonicSum.txt 127.0.0.1/SomethingElse.txt
